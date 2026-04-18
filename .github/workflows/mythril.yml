@@ -1,0 +1,37 @@
+name: Mythril Analysis
+
+on:
+  workflow_dispatch:
+    inputs:
+      contract:
+        description: 'Contract filename (e.g. Reentrancy.sol)'
+        required: true
+        default: 'Reentrancy.sol'
+      solidity_version:
+        description: 'Solidity version (e.g. 0.4.15)'
+        required: true
+        default: '0.4.15'
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run Mythril
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}/contracts:/contracts \
+            mythril/myth:latest \
+            analyze /contracts/${{ github.inputs.contract }} \
+            --solv ${{ github.inputs.solidity_version }} \
+            --execution-timeout 90 \
+            -o markdown \
+            > mythril_output.txt 2>&1 || true
+          cat mythril_output.txt
+
+      - name: Upload results
+        uses: actions/upload-artifact@v3
+        with:
+          name: mythril-results-${{ github.event.inputs.contract }}
+          path: mythril_output.txt
