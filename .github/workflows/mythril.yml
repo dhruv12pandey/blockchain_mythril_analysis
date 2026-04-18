@@ -31,7 +31,7 @@ jobs:
           cat mythril_output.txt
 
       - name: Upload results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: mythril-results-${{ github.event.inputs.contract }}
           path: mythril_output.txt
