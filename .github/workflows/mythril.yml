@@ -16,22 +16,21 @@ jobs:
   analyze:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Run Mythril
         run: |
           docker run --rm \
             -v ${{ github.workspace }}/contracts:/contracts \
             mythril/myth:latest \
-            analyze /contracts/${{ github.inputs.contract }} \
-            --solv ${{ github.inputs.solidity_version }} \
+            analyze /contracts/${{ github.event.inputs.contract }} \
+            --solv ${{ github.event.inputs.solidity_version }} \
             --execution-timeout 90 \
-            -o markdown \
-            > mythril_output.txt 2>&1 || true
+            -o markdown > mythril_output.txt 2>&1 || true
           cat mythril_output.txt
 
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
-          name: mythril-results-${{ github.event.inputs.contract }}
+          name: mythril-results
           path: mythril_output.txt
