@@ -16,6 +16,7 @@ contract Rubixi {
 
         modifier onlyowner {
                 require(msg.sender == creator);
+        _;
         }
 
         struct Participant {
